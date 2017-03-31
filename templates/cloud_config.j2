@@ -61,6 +61,24 @@ coreos:
         RemainAfterExit=true
         ExecStart=/home/core/install_docker_compose
 
+      - name: "docker-cleaner.service"
+        content: |
+          [Unit]
+          Description=Run command line to remove unused images/containers/volumes
+
+          [Service]
+          Type=oneshot
+          ExecStart=/usr/bin/sh -c '/usr/bin/docker system prune -f'
+
+      - name: docker-cleaner.timer
+        command: "start"
+        content: |
+          [Unit]
+          Description=Run docker-cleaner.service every hour
+
+          [Timer]
+          OnCalendar=hourly
+
 {% for unit in wimpy_app.additional_units %}
     {{ unit }}
 {% endfor %}
